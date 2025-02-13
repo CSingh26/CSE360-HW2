@@ -21,28 +21,30 @@ public class LoginPage {
         Button loginButton = new Button("Login");
         Button backButton = new Button("Back");
 
-        //Login Button Action
         loginButton.setOnAction(e -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
 
-            if (UserDAO.validateUser(username, password)) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Login Successful!", ButtonType.OK);
-                alert.showAndWait();
+            String role = UserDAO.validateUser(username, password);  
+            if (role != null) {
+                DashboardPage.showDashboard(primaryStage, username, role); 
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid Credentials!", ButtonType.OK);
-                alert.showAndWait();
+                showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password!");
             }
         });
 
-        //Back Button Action
         backButton.setOnAction(e -> WelcomePage.showWelcomePage(primaryStage));
 
         VBox layout = new VBox(10, usernameLabel, usernameField, passwordLabel, passwordField, loginButton, backButton);
         layout.setPadding(new Insets(20));
-        layout.setStyle("-fx-alignment: center;");
 
-        primaryStage.setScene(new Scene(layout, 300, 250));
+        primaryStage.setScene(new Scene(layout, 350, 250));
         primaryStage.show();
+    }
+
+    private static void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type, content, ButtonType.OK);
+        alert.setTitle(title);
+        alert.showAndWait();
     }
 }

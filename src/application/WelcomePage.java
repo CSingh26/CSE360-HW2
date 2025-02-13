@@ -21,7 +21,6 @@ public class WelcomePage extends Application {
         Button signupBtn = new Button("Signup");
         Button loginBtn = new Button("Login");
 
-        // Call separate methods for navigation
         signupBtn.setOnAction(e -> openSignUpPage(primaryStage));
         loginBtn.setOnAction(e -> openLoginPage(primaryStage));
 
@@ -37,11 +36,11 @@ public class WelcomePage extends Application {
     }
 
     private static void openSignUpPage(Stage primaryStage) {
-        SignUpPage.showSignupPage(primaryStage);  //Navigate to Signup Page
+        SignUpPage.showSignupPage(primaryStage); 
     }
 
     private static void openLoginPage(Stage primaryStage) {
-        LoginPage.showLoginPage(primaryStage);  //Navigate to Login Page
+        LoginPage.showLoginPage(primaryStage);  
     }
 
     public static void main(String[] args) {

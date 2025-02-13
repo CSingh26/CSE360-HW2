@@ -19,14 +19,11 @@ public class DatabaseHelper {
 	public static void dbSetup() {
 		try (Connection conn = getCon();
 			Statement st = conn.createStatement()) {
-				
-			//Creating user table
+
 			String usrTable = "CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(100) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'user')))";
-			
-			//Creating questions table
+
 			String quesTable = "CREATE TABLE IF NOT EXISTS questions (id INT AUTO_INCREMENT PRIMARY KEY, content VARCHAR(255) NOT NULL, author VARCHAR(100) NOT NULL, solved BOOLEAN DEFAULT FALSE)";
-			
-			//Creating Answer Table
+
 			String answerTable = "CREATE TABLE IF NOT EXISTS ans (id INT AUTO_INCREMENT PRIMARY KEY, question_id INT NOT NULL, content VARCHAR(255) NOT NULL, author VARCHAR(255) NOT NULL, FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE)";
 			
 			st.execute(usrTable);

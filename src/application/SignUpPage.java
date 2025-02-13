@@ -18,53 +18,62 @@ public class SignUpPage {
         Label passwordLabel = new Label("Password:");
         PasswordField passwordField = new PasswordField();
 
-        Label roleLabel = new Label("Role:");
-        ChoiceBox<String> roleChoice = new ChoiceBox<>();
-        roleChoice.getItems().addAll("admin", "user");
-        roleChoice.setValue("user");
-
         Button signupButton = new Button("Sign Up");
         Button backButton = new Button("Back");
 
-        //Signup Button Action
         signupButton.setOnAction(e -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
-            String role = roleChoice.getValue();
 
-            if (username.isEmpty() || password.isEmpty()) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Please fill all fields!");
+            if (username.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Username cannot be empty!");
                 return;
             }
 
-            if (!isValidPassword(password)) {
-                showAlert(Alert.AlertType.ERROR, "Invalid Password", 
-                          "Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.");
+            if (UserDAO.isUsernameTaken(username)) {
+                showAlert(Alert.AlertType.ERROR, "Username Taken", 
+                          "This username is already taken. Please choose another one.");
                 return;
             }
 
+            String passwordError = getPasswordError(password);
+            if (!passwordError.isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Password", passwordError);
+                return;
+            }
+
+            String role = UserDAO.isFirstUser() ? "admin" : "user";
             UserDAO.addUser(username, password, role);
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Signup Successful!");
-            WelcomePage.showWelcomePage(primaryStage);
+
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Signup Successful! Please log in.");
+            LoginPage.showLoginPage(primaryStage);
         });
 
-        //Back Button Action
         backButton.setOnAction(e -> WelcomePage.showWelcomePage(primaryStage));
 
-        VBox layout = new VBox(10, usernameLabel, usernameField, passwordLabel, passwordField, roleLabel, roleChoice, signupButton, backButton);
+        VBox layout = new VBox(10, usernameLabel, usernameField, passwordLabel, passwordField, signupButton, backButton);
         layout.setPadding(new Insets(20));
-        layout.setStyle("-fx-alignment: center;");
 
         primaryStage.setScene(new Scene(layout, 350, 300));
         primaryStage.show();
     }
 
-    //Password Validation Method
-    private static boolean isValidPassword(String password) {
-        return password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+    private static String getPasswordError(String password) {
+        if (password.length() < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            return "Password must contain at least one uppercase letter.";
+        }
+        if (!password.matches(".*\\d.*")) {
+            return "Password must contain at least one number.";
+        }
+        if (!password.matches(".*[@$!%*?&].*")) {
+            return "Password must contain at least one special character (@$!%*?&).";
+        }
+        return ""; 
     }
 
-    //Show Alerts for Validation Messages
     private static void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type, content, ButtonType.OK);
         alert.setTitle(title);
